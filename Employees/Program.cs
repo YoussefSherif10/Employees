@@ -10,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureCors();
 builder.Services.AddControllers();
+builder.Services.ConfigureRepositoryManager();
 builder
     .Services
     .AddDbContext<AppDbContext>(
