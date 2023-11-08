@@ -1,9 +1,9 @@
-using Employees.Models;
+using Employees.Models.DTO;
 
 namespace Employees.Interfaces
 {
     public interface ICompanyService
     {
-        public Task<IEnumerable<Company>> GetAllCompanies(bool track);
+        public Task<IEnumerable<CompanyDto>> GetAllCompanies(bool track);
     }
 }

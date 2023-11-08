@@ -1,5 +1,6 @@
 using Employees.Interfaces;
-using Employees.Models;
+using Employees.Models.DTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace Employees.Services
 {
@@ -12,7 +13,18 @@ namespace Employees.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<Company>> GetAllCompanies(bool track) =>
-            await _repository.Company.GetAllCompanies(track);
+        public async Task<IEnumerable<CompanyDto>> GetAllCompanies(bool track)
+        {
+            var companies = await _repository
+                .Company
+                .GetAllCompanies(track)
+                .Select(
+                    c =>
+                        new CompanyDto(c.CompanyId, c.Name, string.Join(", ", c.Address, c.Country))
+                )
+                .ToListAsync();
+
+            return companies;
+        }
     }
 }

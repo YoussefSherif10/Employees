@@ -4,6 +4,6 @@ namespace Employees.Interfaces
 {
     public interface ICompanyRepository
     {
-        public Task<IEnumerable<Company>> GetAllCompanies(bool trackChanges);
+        public IQueryable<Company> GetAllCompanies(bool trackChanges);
     }
 }
