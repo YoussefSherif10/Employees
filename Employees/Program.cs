@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.ConfigureCors();
 builder.Services.AddControllers();
 builder.Services.ConfigureRepositoryManager();
+builder.Services.ConfigureServiceManager();
 builder
     .Services
     .AddDbContext<AppDbContext>(
