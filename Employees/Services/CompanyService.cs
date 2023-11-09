@@ -26,5 +26,15 @@ namespace Employees.Services
 
             return companies;
         }
+
+        public async Task<CompanyDto> GetCompanyById(int id, bool track)
+        {
+            var company = await _repository.Company.GetCompanyById(id, track);
+            return new CompanyDto(
+                company.CompanyId,
+                company.Name,
+                string.Join(", ", company.Address, company.Country)
+            );
+        }
     }
 }

@@ -1,6 +1,10 @@
+using System.Net;
 using Employees.Data;
 using Employees.Extensions;
+using Employees.Models.ErrorModel;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,31 @@ builder
     );
 
 var app = builder.Build();
+
+app.UseExceptionHandler(appError =>
+{
+    appError.Run(async context =>
+    {
+        context.Response.ContentType = "application/json";
+        var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+        if (contextFeature != null)
+        {
+            await context
+                .Response
+                .WriteAsync(
+                    new ErrorDetails
+                    {
+                        StatusCode = contextFeature.Error switch
+                        {
+                            InvalidOperationException => StatusCodes.Status404NotFound,
+                            _ => StatusCodes.Status500InternalServerError
+                        },
+                        Message = contextFeature.Error.Message
+                    }.ToString()
+                );
+        }
+    });
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

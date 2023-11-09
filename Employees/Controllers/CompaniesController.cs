@@ -15,17 +15,11 @@ namespace Employees.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCompanies()
-        {
-            try
-            {
-                var companies = await _service.Company.GetAllCompanies(false);
-                return Ok(companies);
-            }
-            catch
-            {
-                return StatusCode(500, "Internal server error");
-            }
-        }
+        public async Task<IActionResult> GetCompanies() =>
+            Ok(await _service.Company.GetAllCompanies(false));
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetCompany(int id) =>
+            Ok(await _service.Company.GetCompanyById(id, false));
     }
 }

@@ -1,17 +1,25 @@
+using Employees.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Employees.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/companies/{companyId:int}/employees")]
     public class EmployeesController : ControllerBase
     {
-        public EmployeesController() { }
+        private readonly IServiceManager _service;
+
+        public EmployeesController(IServiceManager service)
+        {
+            _service = service;
+        }
 
         [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        public async Task<IActionResult> Get(int companyId) =>
+            Ok(await _service.Employee.GetAllEmployees(companyId, false));
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetEmployee(int companyId, int id) =>
+            Ok(await _service.Employee.GetEmployeeById(companyId, id, false));
     }
 }
