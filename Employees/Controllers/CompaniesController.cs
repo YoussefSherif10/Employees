@@ -1,3 +1,4 @@
+using Employees.Controllers.ModelBinders;
 using Employees.Interfaces;
 using Employees.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,9 @@ namespace Employees.Controllers
         }
 
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]
-        public async Task<IActionResult> GetCompanyCollection(IEnumerable<int> ids)
+        public async Task<IActionResult> GetCompanyCollection(
+            [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<int> ids
+        )
         {
             if (!ids.Any())
                 return BadRequest("Empty list of ids");
