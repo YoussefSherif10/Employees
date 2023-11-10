@@ -15,5 +15,8 @@ namespace Employees.Interfaces
             IEnumerable<CompanyDto> companyCollection,
             string ids
         )> CreateCompanyCollection(IEnumerable<CompanyForCreationDto> companies);
+
+        public Task DeleteCompany(int id);
+        public Task UpdateCompany(int companyId, CompanyForUpdateDto companyForUpdate);
     }
 }

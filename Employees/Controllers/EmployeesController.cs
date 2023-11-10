@@ -34,5 +34,23 @@ namespace Employees.Controllers
                 created
             );
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteEmployee(int companyId, int id)
+        {
+            await _service.Employee.DeleteEmployee(companyId, id);
+            return NoContent();
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateEmployee(
+            int companyId,
+            int id,
+            [FromBody] EmployeeForUpdateDto employee
+        )
+        {
+            await _service.Employee.UpdateEmployee(companyId, id, employee);
+            return NoContent();
+        }
     }
 }

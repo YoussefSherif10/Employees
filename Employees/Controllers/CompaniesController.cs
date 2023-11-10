@@ -56,5 +56,22 @@ namespace Employees.Controllers
             System.Console.WriteLine(ids);
             return CreatedAtRoute("CompanyCollection", new { ids }, companyCollection);
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteCompany(int id)
+        {
+            await _service.Company.DeleteCompany(id);
+            return NoContent();
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateCompany(
+            int id,
+            [FromBody] CompanyForUpdateDto company
+        )
+        {
+            await _service.Company.UpdateCompany(id, company);
+            return NoContent();
+        }
     }
 }

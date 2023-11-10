@@ -30,6 +30,13 @@ namespace Employees.Services
             return new EmployeeDto(entity.EmployeeId, entity.Name, entity.Position, entity.Age);
         }
 
+        public async Task DeleteEmployee(int companyId, int id)
+        {
+            var employee = await _repository.Employee.GetEmployeeById(companyId, id, true);
+            _repository.Employee.DeleteEmployee(employee);
+            await _repository.Save();
+        }
+
         public async Task<IEnumerable<EmployeeDto>> GetAllEmployees(
             int companyId,
             bool trackChanges
@@ -49,6 +56,16 @@ namespace Employees.Services
                 employee.Position,
                 employee.Age
             );
+        }
+
+        public async Task UpdateEmployee(int companyId, int id, EmployeeForUpdateDto employee)
+        {
+            var emp = await _repository.Employee.GetEmployeeById(companyId, id, true);
+            emp.Name = employee.Name;
+            emp.Position = employee.Position;
+            emp.Age = employee.Age;
+            _repository.Employee.UpdateEmployee(emp);
+            await _repository.Save();
         }
     }
 }

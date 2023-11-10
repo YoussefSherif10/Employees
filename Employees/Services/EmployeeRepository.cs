@@ -12,6 +12,8 @@ namespace Employees.Services
 
         public void CreateEmployee(Employee employee) => Create(employee);
 
+        public void DeleteEmployee(Employee employee) => Delete(employee);
+
         public IQueryable<Employee> GetAllEmployees(int companyId, bool trackChanges) =>
             FindByCondition(e => e.CompanyId.Equals(companyId), trackChanges);
 
@@ -20,5 +22,7 @@ namespace Employees.Services
             var employees = FindByCondition(e => e.CompanyId.Equals(companyId), track);
             return await employees.SingleAsync(e => e.EmployeeId == id);
         }
+
+        public void UpdateEmployee(Employee employee) => Update(employee);
     }
 }

@@ -85,6 +85,13 @@ namespace Employees.Services
             );
         }
 
+        public async Task DeleteCompany(int id)
+        {
+            var company = await _repository.Company.GetCompanyById(id, true);
+            _repository.Company.DeleteCompany(company);
+            await _repository.Save();
+        }
+
         public async Task<IEnumerable<CompanyDto>> GetAllCompanies(bool track)
         {
             var companies = await _repository
@@ -120,6 +127,29 @@ namespace Employees.Services
                 company.Name,
                 string.Join(", ", company.Address, company.Country)
             );
+        }
+
+        public async Task UpdateCompany(int companyId, CompanyForUpdateDto companyForUpdate)
+        {
+            var company = await _repository.Company.GetCompanyById(companyId, true);
+            company.Name = companyForUpdate.Name;
+            company.Address = companyForUpdate.Address;
+            company.Country = companyForUpdate.Country;
+            company.Employees = companyForUpdate
+                .Employees
+                .Select(
+                    e =>
+                        new Employee
+                        {
+                            Name = e.Name,
+                            Age = e.Age,
+                            Position = e.Position
+                        }
+                )
+                .ToList();
+
+            _repository.Company.UpdateCompany(company);
+            await _repository.Save();
         }
     }
 }
