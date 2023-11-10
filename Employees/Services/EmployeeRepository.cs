@@ -10,6 +10,8 @@ namespace Employees.Services
         public EmployeeRepository(AppDbContext RepositoryContext)
             : base(RepositoryContext) { }
 
+        public void CreateEmployee(Employee employee) => Create(employee);
+
         public IQueryable<Employee> GetAllEmployees(int companyId, bool trackChanges) =>
             FindByCondition(e => e.CompanyId.Equals(companyId), trackChanges);
 

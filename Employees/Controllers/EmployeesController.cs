@@ -1,5 +1,7 @@
 using Employees.Interfaces;
+using Employees.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace Employees.Controllers
 {
@@ -21,5 +23,16 @@ namespace Employees.Controllers
         [HttpGet("{id:int}", Name = "GetEmployeeById")]
         public async Task<IActionResult> GetEmployee(int companyId, int id) =>
             Ok(await _service.Employee.GetEmployeeById(companyId, id, false));
+
+        [HttpPost]
+        public IActionResult CreateEmployee(int companyId, EmployeeForCreationDto employee)
+        {
+            var created = _service.Employee.CreateEmployee(companyId, employee);
+            return CreatedAtRoute(
+                "GetEmployeeById",
+                new { companyId, id = created.EmployeeId },
+                created
+            );
+        }
     }
 }

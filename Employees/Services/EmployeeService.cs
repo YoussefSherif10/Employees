@@ -1,4 +1,5 @@
 using Employees.Interfaces;
+using Employees.Models;
 using Employees.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,22 @@ namespace Employees.Services
         public EmployeeService(IRepositoryManager repository)
         {
             _repository = repository;
+        }
+
+        public EmployeeDto CreateEmployee(int companyId, EmployeeForCreationDto employee)
+        {
+            var entity = new Employee
+            {
+                CompanyId = companyId,
+                Name = employee.Name,
+                Position = employee.Position,
+                Age = employee.Age
+            };
+
+            _repository.Employee.CreateEmployee(entity);
+            _repository.Save();
+
+            return new EmployeeDto(entity.EmployeeId, entity.Name, entity.Position, entity.Age);
         }
 
         public async Task<IEnumerable<EmployeeDto>> GetAllEmployees(
