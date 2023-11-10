@@ -10,6 +10,8 @@ namespace Employees.Services
         public CompanyRepository(AppDbContext RepositoryContext)
             : base(RepositoryContext) { }
 
+        public void CreateCompany(Company company) => Create(company);
+
         public IQueryable<Company> GetAllCompanies(bool trackChanges) => FindAll(trackChanges);
 
         public async Task<Company> GetCompanyById(int id, bool track) =>

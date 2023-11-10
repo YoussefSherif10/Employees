@@ -14,11 +14,11 @@ namespace Employees.Controllers
             _service = service;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetEmployees")]
         public async Task<IActionResult> Get(int companyId) =>
             Ok(await _service.Employee.GetAllEmployees(companyId, false));
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetEmployeeById")]
         public async Task<IActionResult> GetEmployee(int companyId, int id) =>
             Ok(await _service.Employee.GetEmployeeById(companyId, id, false));
     }
