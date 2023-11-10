@@ -13,7 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureCors();
-builder.Services.AddControllers();
+builder
+    .Services
+    .AddControllers(options =>
+    {
+        options.RespectBrowserAcceptHeader = true;
+        options.ReturnHttpNotAcceptable = true;
+    })
+    .AddXmlDataContractSerializerFormatters();
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder
