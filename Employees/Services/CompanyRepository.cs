@@ -12,7 +12,10 @@ namespace Employees.Services
 
         public void CreateCompany(Company company) => Create(company);
 
-        public IQueryable<Company> GetAllCompanies(bool trackChanges) => FindAll(trackChanges);
+        public IQueryable<Company> GetAllCompanies(in bool trackChanges) => FindAll(trackChanges);
+
+        public IQueryable<Company> GetCompaniesByIds(IEnumerable<int> ids, bool trackChanges) =>
+            FindByCondition(x => ids.Contains(x.CompanyId), trackChanges);
 
         public async Task<Company> GetCompanyById(int id, bool track) =>
             await FindByCondition(c => c.CompanyId.Equals(id), track).SingleAsync();

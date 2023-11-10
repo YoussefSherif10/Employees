@@ -24,10 +24,34 @@ namespace Employees.Controllers
             Ok(await _service.Company.GetCompanyById(id, false));
 
         [HttpPost]
-        public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
+        public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {
-            var created = _service.Company.CreateCompany(company);
+            var created = await _service.Company.CreateCompany(company);
             return CreatedAtRoute("GetCompanyById", new { id = created.CompanyId }, created);
+        }
+
+        [HttpGet("collection/({ids})", Name = "CompanyCollection")]
+        public async Task<IActionResult> GetCompanyCollection(IEnumerable<int> ids)
+        {
+            if (!ids.Any())
+                return BadRequest("Empty list of ids");
+
+            return Ok(await _service.Company.GetCompaniesByIds(ids, false));
+        }
+
+        [HttpPost("collection")]
+        public async Task<IActionResult> CreateCompaniesByIds(
+            [FromBody] IEnumerable<CompanyForCreationDto> companies
+        )
+        {
+            if (!companies.Any())
+                return BadRequest("empty companies list");
+
+            var (companyCollection, ids) = await _service
+                .Company
+                .CreateCompanyCollection(companies);
+            System.Console.WriteLine(ids);
+            return CreatedAtRoute("CompanyCollection", new { ids }, companyCollection);
         }
     }
 }

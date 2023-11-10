@@ -3,6 +3,7 @@ using Employees.Data;
 using Employees.Extensions;
 using Employees.Models.ErrorModel;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using SQLitePCL;
 
@@ -47,6 +48,7 @@ app.UseExceptionHandler(appError =>
                         StatusCode = contextFeature.Error switch
                         {
                             InvalidOperationException => StatusCodes.Status404NotFound,
+                            BadHttpRequestException => StatusCodes.Status400BadRequest,
                             _ => StatusCodes.Status500InternalServerError
                         },
                         Message = contextFeature.Error.Message

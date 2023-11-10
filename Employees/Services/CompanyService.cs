@@ -14,22 +14,74 @@ namespace Employees.Services
             _repository = repository;
         }
 
-        public CompanyDto CreateCompany(CompanyForCreationDto company)
+        public async Task<CompanyDto> CreateCompany(CompanyForCreationDto company)
         {
             var entity = new Company
             {
                 Name = company.Name,
                 Address = company.Address,
-                Country = company.Country
+                Country = company.Country,
+                Employees = company
+                    .Employees
+                    .Select(
+                        e =>
+                            new Employee
+                            {
+                                Name = e.Name,
+                                Position = e.Position,
+                                Age = e.Age
+                            }
+                    )
+                    .ToList()
             };
 
             _repository.Company.CreateCompany(entity);
-            _repository.Save();
+            await _repository.Save();
 
             return new CompanyDto(
                 entity.CompanyId,
                 entity.Name,
                 string.Join(", ", entity.Address, entity.Country)
+            );
+        }
+
+        public async Task<(
+            IEnumerable<CompanyDto> companyCollection,
+            string ids
+        )> CreateCompanyCollection(IEnumerable<CompanyForCreationDto> companies)
+        {
+            var entities = companies.Select(
+                c =>
+                    new Company
+                    {
+                        Name = c.Name,
+                        Address = c.Address,
+                        Country = c.Country,
+                        Employees = c.Employees
+                            .Select(
+                                e =>
+                                    new Employee
+                                    {
+                                        Name = e.Name,
+                                        Age = e.Age,
+                                        Position = e.Position
+                                    }
+                            )
+                            .ToList()
+                    }
+            );
+
+            foreach (var entity in entities)
+                _repository.Company.CreateCompany(entity);
+
+            await _repository.Save();
+
+            return (
+                companyCollection: entities.Select(
+                    e =>
+                        new CompanyDto(e.CompanyId, e.Name, string.Join(", ", e.Address, e.Country))
+                ),
+                ids: string.Join(",", entities.Select(e => e.CompanyId))
             );
         }
 
@@ -46,6 +98,19 @@ namespace Employees.Services
 
             return companies;
         }
+
+        public async Task<IEnumerable<CompanyDto>> GetCompaniesByIds(
+            IEnumerable<int> ids,
+            bool trackChanges
+        ) =>
+            await _repository
+                .Company
+                .GetCompaniesByIds(ids, trackChanges)
+                .Select(
+                    c =>
+                        new CompanyDto(c.CompanyId, c.Name, string.Join(", ", c.Address, c.Country))
+                )
+                .ToListAsync();
 
         public async Task<CompanyDto> GetCompanyById(int id, bool track)
         {

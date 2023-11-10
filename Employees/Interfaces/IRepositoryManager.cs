@@ -4,6 +4,6 @@ namespace Employees.Interfaces
     {
         public ICompanyRepository Company { get; }
         public IEmployeeRepository Employee { get; }
-        void Save();
+        Task Save();
     }
 }

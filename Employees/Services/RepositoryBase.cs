@@ -19,7 +19,7 @@ namespace Employees.Services
 
         public void Delete(T entity) => repositoryContext.Set<T>().Remove(entity);
 
-        public IQueryable<T> FindAll(bool trackChanges) =>
+        public IQueryable<T> FindAll(in bool trackChanges) =>
             trackChanges ? repositoryContext.Set<T>() : repositoryContext.Set<T>().AsNoTracking();
 
         public IQueryable<T> FindByCondition(
