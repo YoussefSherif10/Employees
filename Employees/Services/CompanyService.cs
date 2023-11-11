@@ -87,7 +87,7 @@ namespace Employees.Services
 
         public async Task DeleteCompany(int id)
         {
-            var company = await _repository.Company.GetCompanyById(id, true);
+            var company = new Company { CompanyId = id };
             _repository.Company.DeleteCompany(company);
             await _repository.Save();
         }
@@ -132,6 +132,7 @@ namespace Employees.Services
         public async Task UpdateCompany(int companyId, CompanyForUpdateDto companyForUpdate)
         {
             var company = await _repository.Company.GetCompanyById(companyId, true);
+
             company.Name = companyForUpdate.Name;
             company.Address = companyForUpdate.Address;
             company.Country = companyForUpdate.Country;

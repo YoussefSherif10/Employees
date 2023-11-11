@@ -1,3 +1,4 @@
+using Employees.Controllers.ActionFilters;
 using Employees.Controllers.ModelBinders;
 using Employees.Interfaces;
 using Employees.Models.DTO;
@@ -25,6 +26,7 @@ namespace Employees.Controllers
             Ok(await _service.Company.GetCompanyById(id, false));
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {
             var created = await _service.Company.CreateCompany(company);
@@ -43,17 +45,14 @@ namespace Employees.Controllers
         }
 
         [HttpPost("collection")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateCompaniesByIds(
             [FromBody] IEnumerable<CompanyForCreationDto> companies
         )
         {
-            if (!companies.Any())
-                return BadRequest("empty companies list");
-
             var (companyCollection, ids) = await _service
                 .Company
                 .CreateCompanyCollection(companies);
-            System.Console.WriteLine(ids);
             return CreatedAtRoute("CompanyCollection", new { ids }, companyCollection);
         }
 
@@ -65,6 +64,7 @@ namespace Employees.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> UpdateCompany(
             int id,
             [FromBody] CompanyForUpdateDto company

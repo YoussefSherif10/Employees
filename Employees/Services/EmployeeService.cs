@@ -32,7 +32,7 @@ namespace Employees.Services
 
         public async Task DeleteEmployee(int companyId, int id)
         {
-            var employee = await _repository.Employee.GetEmployeeById(companyId, id, true);
+            var employee = new Employee { EmployeeId = id };
             _repository.Employee.DeleteEmployee(employee);
             await _repository.Save();
         }

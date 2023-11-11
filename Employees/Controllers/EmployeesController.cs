@@ -1,3 +1,4 @@
+using Employees.Controllers.ActionFilters;
 using Employees.Interfaces;
 using Employees.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ namespace Employees.Controllers
             Ok(await _service.Employee.GetEmployeeById(companyId, id, false));
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public IActionResult CreateEmployee(int companyId, EmployeeForCreationDto employee)
         {
             var created = _service.Employee.CreateEmployee(companyId, employee);
@@ -43,6 +45,7 @@ namespace Employees.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> UpdateEmployee(
             int companyId,
             int id,

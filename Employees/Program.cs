@@ -1,11 +1,9 @@
-using System.Net;
+using Employees.Controllers.ActionFilters;
 using Employees.Data;
 using Employees.Extensions;
 using Employees.Models.ErrorModel;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +27,7 @@ builder
     .AddDbContext<AppDbContext>(
         options => options.UseSqlite(builder.Configuration.GetConnectionString("SqlConnection"))
     );
+builder.Services.AddScoped<ValidationFilterAttribute>();
 
 var app = builder.Build();
 
