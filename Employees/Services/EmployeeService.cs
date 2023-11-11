@@ -1,6 +1,7 @@
 using Employees.Interfaces;
 using Employees.Models;
 using Employees.Models.DTO;
+using Employees.Models.Params;
 using Microsoft.EntityFrameworkCore;
 
 namespace Employees.Services
@@ -37,15 +38,25 @@ namespace Employees.Services
             await _repository.Save();
         }
 
-        public async Task<IEnumerable<EmployeeDto>> GetAllEmployees(
-            int companyId,
-            bool trackChanges
-        ) =>
-            await _repository
-                .Employee
-                .GetAllEmployees(companyId, trackChanges)
-                .Select(e => new EmployeeDto(e.EmployeeId, e.Name, e.Position, e.Age))
-                .ToListAsync();
+        public async Task<(
+            IEnumerable<EmployeeDto> employeeDtos,
+            PagingInfoDto pagingInfoDto
+        )> GetAllEmployees(int companyId, EmployeeParams employeeParams, bool trackChanges) =>
+            (
+                employeeDtos: await _repository
+                    .Employee
+                    .GetAllEmployees(companyId, trackChanges)
+                    .OrderBy(e => e.Name)
+                    .Skip((employeeParams.PageNumber - 1) * employeeParams.PageSize)
+                    .Take(employeeParams.PageSize)
+                    .Select(e => new EmployeeDto(e.EmployeeId, e.Name, e.Position, e.Age))
+                    .ToListAsync(),
+                pagingInfoDto: new PagingInfoDto(
+                    employeeParams.PageNumber,
+                    employeeParams.PageSize,
+                    await _repository.Employee.GetAllEmployees(companyId, trackChanges).CountAsync()
+                )
+            );
 
         public async Task<EmployeeDto> GetEmployeeById(int companyId, int id, bool track)
         {

@@ -1,6 +1,7 @@
 using Employees.Interfaces;
 using Employees.Models;
 using Employees.Models.DTO;
+using Employees.Models.Params;
 using Microsoft.EntityFrameworkCore;
 
 namespace Employees.Services
@@ -92,18 +93,30 @@ namespace Employees.Services
             await _repository.Save();
         }
 
-        public async Task<IEnumerable<CompanyDto>> GetAllCompanies(bool track)
+        public async Task<(
+            IEnumerable<CompanyDto> companyDtos,
+            PagingInfoDto pagingInfoDto
+        )> GetAllCompanies(CompanyParams companyParams, bool track)
         {
             var companies = await _repository
                 .Company
                 .GetAllCompanies(track)
+                .OrderBy(c => c.Name)
+                .Skip((companyParams.PageNumber - 1) * companyParams.PageSize)
+                .Take(companyParams.PageSize)
                 .Select(
                     c =>
                         new CompanyDto(c.CompanyId, c.Name, string.Join(", ", c.Address, c.Country))
                 )
                 .ToListAsync();
 
-            return companies;
+            var paging = new PagingInfoDto(
+                companyParams.PageNumber,
+                companyParams.PageSize,
+                await _repository.Company.GetAllCompanies(track).CountAsync()
+            );
+
+            return (companyDtos: companies, pagingInfoDto: paging);
         }
 
         public async Task<IEnumerable<CompanyDto>> GetCompaniesByIds(

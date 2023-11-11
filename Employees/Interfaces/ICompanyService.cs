@@ -1,10 +1,14 @@
 using Employees.Models.DTO;
+using Employees.Models.Params;
 
 namespace Employees.Interfaces
 {
     public interface ICompanyService
     {
-        public Task<IEnumerable<CompanyDto>> GetAllCompanies(bool track);
+        public Task<(
+            IEnumerable<CompanyDto> companyDtos,
+            PagingInfoDto pagingInfoDto
+        )> GetAllCompanies(CompanyParams companyParams, bool track);
         public Task<CompanyDto> GetCompanyById(int id, bool track);
         public Task<CompanyDto> CreateCompany(CompanyForCreationDto company);
         public Task<IEnumerable<CompanyDto>> GetCompaniesByIds(

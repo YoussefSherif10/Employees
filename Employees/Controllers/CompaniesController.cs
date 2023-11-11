@@ -2,6 +2,7 @@ using Employees.Controllers.ActionFilters;
 using Employees.Controllers.ModelBinders;
 using Employees.Interfaces;
 using Employees.Models.DTO;
+using Employees.Models.Params;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Employees.Controllers
@@ -18,8 +19,13 @@ namespace Employees.Controllers
         }
 
         [HttpGet(Name = "GetCompanies")]
-        public async Task<IActionResult> GetCompanies() =>
-            Ok(await _service.Company.GetAllCompanies(false));
+        public async Task<IActionResult> GetCompanies([FromQuery] CompanyParams companyParams)
+        {
+            var (companyDtos, pagingInfoDto) = await _service
+                .Company
+                .GetAllCompanies(companyParams, false);
+            return Ok(new { Companies = companyDtos, PagingInfo = pagingInfoDto });
+        }
 
         [HttpGet("{id:int}", Name = "GetCompanyById")]
         public async Task<IActionResult> GetCompany(int id) =>

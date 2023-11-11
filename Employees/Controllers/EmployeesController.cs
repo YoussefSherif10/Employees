@@ -1,6 +1,7 @@
 using Employees.Controllers.ActionFilters;
 using Employees.Interfaces;
 using Employees.Models.DTO;
+using Employees.Models.Params;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 
@@ -18,8 +19,16 @@ namespace Employees.Controllers
         }
 
         [HttpGet(Name = "GetEmployees")]
-        public async Task<IActionResult> Get(int companyId) =>
-            Ok(await _service.Employee.GetAllEmployees(companyId, false));
+        public async Task<IActionResult> Get(
+            int companyId,
+            [FromQuery] EmployeeParams employeeParams
+        )
+        {
+            var (employeeDtos, paginginfoDto) = await _service
+                .Employee
+                .GetAllEmployees(companyId, employeeParams, false);
+            return Ok(new { Employees = employeeDtos, PagingInfo = paginginfoDto });
+        }
 
         [HttpGet("{id:int}", Name = "GetEmployeeById")]
         public async Task<IActionResult> GetEmployee(int companyId, int id) =>
