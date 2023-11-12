@@ -110,10 +110,7 @@ namespace Employees.Services
                     companyParams.MinEmployees
                 )
                 .SearchCompanies(companyParams.SearchTerm)
-                .Select(
-                    c =>
-                        new CompanyDto(c.CompanyId, c.Name, string.Join(", ", c.Address, c.Country))
-                )
+                .IncludeEmployees(companyParams.IncludeEmployees)
                 .ToListAsync();
 
             var paging = new PagingInfoDto
@@ -128,25 +125,24 @@ namespace Employees.Services
 
         public async Task<IEnumerable<CompanyDto>> GetCompaniesByIds(
             IEnumerable<int> ids,
+            CompanyParams companyParams,
             bool trackChanges
         ) =>
             await _repository
                 .Company
                 .GetCompaniesByIds(ids, trackChanges)
-                .Select(
-                    c =>
-                        new CompanyDto(c.CompanyId, c.Name, string.Join(", ", c.Address, c.Country))
-                )
+                .IncludeEmployees(companyParams.IncludeEmployees)
                 .ToListAsync();
 
-        public async Task<CompanyDto> GetCompanyById(int id, bool track)
+        public async Task<CompanyDto> GetCompanyById(
+            int id,
+            CompanyParams companyParams,
+            bool track
+        )
         {
             var company = await _repository.Company.GetCompanyById(id, track);
-            return new CompanyDto(
-                company.CompanyId,
-                company.Name,
-                string.Join(", ", company.Address, company.Country)
-            );
+
+            return company.IncludeEmployees(companyParams.IncludeEmployees);
         }
 
         public async Task UpdateCompany(int companyId, CompanyForUpdateDto companyForUpdate)

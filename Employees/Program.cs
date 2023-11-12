@@ -28,6 +28,7 @@ builder
         options => options.UseSqlite(builder.Configuration.GetConnectionString("SqlConnection"))
     );
 builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.ConfigureVersioning();
 
 var app = builder.Build();
 

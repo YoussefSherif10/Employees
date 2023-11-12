@@ -5,5 +5,6 @@ namespace Employees.Models.Params
         public CompanyFilterBy? FilterBy { get; init; }
         public CompanySortBy? SortBy { get; init; }
         public int MinEmployees { get; init; } = 0;
+        public bool IncludeEmployees { get; set; } = false;
     }
 }

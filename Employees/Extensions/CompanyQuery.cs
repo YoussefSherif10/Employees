@@ -1,5 +1,8 @@
+using System.Security.AccessControl;
 using Employees.Models;
+using Employees.Models.DTO;
 using Employees.Models.Params;
+using Microsoft.EntityFrameworkCore;
 
 namespace Employees.Extensions
 {
@@ -51,6 +54,60 @@ namespace Employees.Extensions
                 return query.Where(x => x.Name.Contains(searchTerm));
 
             return query;
+        }
+
+        public static IQueryable<CompanyDto> IncludeEmployees(
+            this IQueryable<Company> query,
+            bool getEmployees
+        )
+        {
+            if (!getEmployees)
+            {
+                return query.Select(
+                    c =>
+                        new CompanyDto(
+                            c.CompanyId,
+                            c.Name,
+                            string.Join(", ", c.Address, c.Country),
+                            null
+                        )
+                );
+            }
+
+            return query.Select(
+                c =>
+                    new CompanyDto(
+                        c.CompanyId,
+                        c.Name,
+                        string.Join(", ", c.Address, c.Country),
+                        c.Employees.Select(
+                            e => new EmployeeDto(e.EmployeeId, e.Name, e.Position, e.Age)
+                        )
+                    )
+            );
+        }
+
+        public static CompanyDto IncludeEmployees(this Company query, bool getEmployees)
+        {
+            if (!getEmployees)
+            {
+                return new CompanyDto(
+                    query.CompanyId,
+                    query.Name,
+                    string.Join(", ", query.Address, query.Country),
+                    null
+                );
+            }
+
+            return new CompanyDto(
+                query.CompanyId,
+                query.Name,
+                string.Join(", ", query.Address, query.Country),
+                query
+                    .Employees
+                    .Select(e => new EmployeeDto(e.EmployeeId, e.Name, e.Position, e.Age))
+                    .ToList()
+            );
         }
     }
 }

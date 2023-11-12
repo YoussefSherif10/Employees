@@ -9,10 +9,11 @@ namespace Employees.Interfaces
             IEnumerable<CompanyDto> companyDtos,
             PagingInfoDto pagingInfoDto
         )> GetAllCompanies(CompanyParams companyParams, bool track);
-        public Task<CompanyDto> GetCompanyById(int id, bool track);
+        public Task<CompanyDto> GetCompanyById(int id, CompanyParams companyParams, bool track);
         public Task<CompanyDto> CreateCompany(CompanyForCreationDto company);
         public Task<IEnumerable<CompanyDto>> GetCompaniesByIds(
             IEnumerable<int> ids,
+            CompanyParams companyParams,
             bool trackChanges
         );
         public Task<(

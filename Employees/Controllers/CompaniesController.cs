@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Employees.Controllers
 {
+    [ApiVersion("1.0")]
     [ApiController]
-    [Route("api/companies")]
+    [Route("api/{v:apiversion}/companies")]
     public class CompaniesController : ControllerBase
     {
         private readonly IServiceManager _service;
@@ -19,17 +20,22 @@ namespace Employees.Controllers
         }
 
         [HttpGet(Name = "GetCompanies")]
+        [HttpHead]
         public async Task<IActionResult> GetCompanies([FromQuery] CompanyParams companyParams)
         {
             var (companyDtos, pagingInfoDto) = await _service
                 .Company
                 .GetAllCompanies(companyParams, false);
-            return Ok(new { Companies = companyDtos, PagingInfo = pagingInfoDto });
+
+            Response.Headers.Add("X-Pagination", pagingInfoDto.ToString());
+            return Ok(companyDtos);
         }
 
         [HttpGet("{id:int}", Name = "GetCompanyById")]
-        public async Task<IActionResult> GetCompany(int id) =>
-            Ok(await _service.Company.GetCompanyById(id, false));
+        public async Task<IActionResult> GetCompany(
+            int id,
+            [FromQuery] CompanyParams companyParams
+        ) => Ok(await _service.Company.GetCompanyById(id, companyParams, false));
 
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
@@ -41,13 +47,14 @@ namespace Employees.Controllers
 
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]
         public async Task<IActionResult> GetCompanyCollection(
-            [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<int> ids
+            [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<int> ids,
+            [FromQuery] CompanyParams companyParams
         )
         {
             if (!ids.Any())
                 return BadRequest("Empty list of ids");
 
-            return Ok(await _service.Company.GetCompaniesByIds(ids, false));
+            return Ok(await _service.Company.GetCompaniesByIds(ids, companyParams, false));
         }
 
         [HttpPost("collection")]

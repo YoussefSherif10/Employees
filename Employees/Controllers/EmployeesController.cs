@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Employees.Controllers
 {
+    [ApiVersion("1.0")]
     [ApiController]
-    [Route("api/companies/{companyId:int}/employees")]
+    [Route("api/{v:apiversion}/companies/{companyId:int}/employees")]
     public class EmployeesController : ControllerBase
     {
         private readonly IServiceManager _service;
@@ -18,6 +19,7 @@ namespace Employees.Controllers
         }
 
         [HttpGet(Name = "GetEmployees")]
+        [HttpHead]
         public async Task<IActionResult> Get(
             int companyId,
             [FromQuery] EmployeeParams employeeParams
@@ -26,7 +28,8 @@ namespace Employees.Controllers
             var (employeeDtos, paginginfoDto) = await _service
                 .Employee
                 .GetAllEmployees(companyId, employeeParams, false);
-            return Ok(new { Employees = employeeDtos, PagingInfo = paginginfoDto });
+            Response.Headers.Add("X-Pagination", paginginfoDto.ToString());
+            return Ok(employeeDtos);
         }
 
         [HttpGet("{id:int}", Name = "GetEmployeeById")]
