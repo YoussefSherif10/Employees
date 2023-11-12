@@ -29,5 +29,20 @@ namespace Employees.Extensions
                 opt.AssumeDefaultVersionWhenUnspecified = true;
                 opt.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
             });
+
+        public static void ConfigureCaching(this IServiceCollection services) =>
+            services.AddResponseCaching();
+
+        public static void ConfigureCacheHeaders(this IServiceCollection services) =>
+            services.AddHttpCacheHeaders(
+                (expiration) =>
+                {
+                    expiration.MaxAge = 180;
+                },
+                (validation) =>
+                {
+                    validation.MustRevalidate = true;
+                }
+            );
     }
 }

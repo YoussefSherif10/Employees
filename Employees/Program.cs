@@ -29,6 +29,8 @@ builder
     );
 builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.ConfigureVersioning();
+builder.Services.ConfigureCaching();
+builder.Services.ConfigureCacheHeaders();
 
 var app = builder.Build();
 
@@ -67,6 +69,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
+app.UseResponseCaching();
+app.UseHttpCacheHeaders();
 
 app.MapControllers();
 
