@@ -1,2 +1,5 @@
 obj/
 bin/
+Employees/Employees.db
+Employees/Employees.db-shm
+Employees/Employees.db-wal

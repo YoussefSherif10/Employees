@@ -3,7 +3,6 @@ using Employees.Interfaces;
 using Employees.Models.DTO;
 using Employees.Models.Params;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 
 namespace Employees.Controllers
 {

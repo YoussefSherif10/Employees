@@ -11,5 +11,8 @@ namespace Employees.Models.Params
             get => _pageSize;
             set => _pageSize = Math.Min(MaxPageSize, value);
         }
+
+        public string? SearchTerm { get; init; }
+        public string? FilterValue { get; init; }
     }
 }

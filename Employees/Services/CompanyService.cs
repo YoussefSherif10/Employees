@@ -1,3 +1,4 @@
+using Employees.Extensions;
 using Employees.Interfaces;
 using Employees.Models;
 using Employees.Models.DTO;
@@ -101,20 +102,26 @@ namespace Employees.Services
             var companies = await _repository
                 .Company
                 .GetAllCompanies(track)
-                .OrderBy(c => c.Name)
-                .Skip((companyParams.PageNumber - 1) * companyParams.PageSize)
-                .Take(companyParams.PageSize)
+                .SortCompanies(companyParams.SortBy)
+                .Pagination(companyParams.PageNumber, companyParams.PageSize)
+                .FilterCompanies(
+                    companyParams.FilterBy,
+                    companyParams.FilterValue,
+                    companyParams.MinEmployees
+                )
+                .SearchCompanies(companyParams.SearchTerm)
                 .Select(
                     c =>
                         new CompanyDto(c.CompanyId, c.Name, string.Join(", ", c.Address, c.Country))
                 )
                 .ToListAsync();
 
-            var paging = new PagingInfoDto(
-                companyParams.PageNumber,
-                companyParams.PageSize,
-                await _repository.Company.GetAllCompanies(track).CountAsync()
-            );
+            var paging = new PagingInfoDto
+            {
+                CurrentPage = companyParams.PageNumber,
+                ItemsPerPage = companyParams.PageSize,
+                TotalItems = await _repository.Company.GetAllCompanies(track).CountAsync()
+            };
 
             return (companyDtos: companies, pagingInfoDto: paging);
         }

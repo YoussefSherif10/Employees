@@ -1,3 +1,4 @@
+using Employees.Extensions;
 using Employees.Interfaces;
 using Employees.Models;
 using Employees.Models.DTO;
@@ -41,22 +42,39 @@ namespace Employees.Services
         public async Task<(
             IEnumerable<EmployeeDto> employeeDtos,
             PagingInfoDto pagingInfoDto
-        )> GetAllEmployees(int companyId, EmployeeParams employeeParams, bool trackChanges) =>
-            (
-                employeeDtos: await _repository
-                    .Employee
-                    .GetAllEmployees(companyId, trackChanges)
-                    .OrderBy(e => e.Name)
-                    .Skip((employeeParams.PageNumber - 1) * employeeParams.PageSize)
-                    .Take(employeeParams.PageSize)
+        )> GetAllEmployees(int companyId, EmployeeParams employeeParams, bool trackChanges)
+        {
+            if (!employeeParams.ValidRange)
+                throw new BadHttpRequestException("the entered range for the ages is not valid");
+
+            var employees = _repository
+                .Employee
+                .GetAllEmployees(companyId, trackChanges)
+                .SortEmployees(employeeParams.SortBy)
+                .Pagination(employeeParams.PageNumber, employeeParams.PageSize)
+                .FilterEmployees(
+                    employeeParams.FilterBy,
+                    employeeParams.FilterValue,
+                    employeeParams.MinAge,
+                    employeeParams.MaxAge
+                )
+                .SearchEmployees(employeeParams.SearchTerm);
+
+            return (
+                employeeDtos: await employees
                     .Select(e => new EmployeeDto(e.EmployeeId, e.Name, e.Position, e.Age))
                     .ToListAsync(),
-                pagingInfoDto: new PagingInfoDto(
-                    employeeParams.PageNumber,
-                    employeeParams.PageSize,
-                    await _repository.Employee.GetAllEmployees(companyId, trackChanges).CountAsync()
-                )
+                pagingInfoDto: new PagingInfoDto
+                {
+                    CurrentPage = employeeParams.PageNumber,
+                    ItemsPerPage = employeeParams.PageSize,
+                    TotalItems = await _repository
+                        .Employee
+                        .GetAllEmployees(companyId, trackChanges)
+                        .CountAsync()
+                }
             );
+        }
 
         public async Task<EmployeeDto> GetEmployeeById(int companyId, int id, bool track)
         {
