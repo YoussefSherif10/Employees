@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using Employees.Controllers.ActionFilters;
 using Employees.Data;
 using Employees.Extensions;
@@ -31,6 +32,9 @@ builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.ConfigureVersioning();
 builder.Services.ConfigureCaching();
 builder.Services.ConfigureCacheHeaders();
+builder.Services.AddMemoryCache();
+builder.Services.ConfigureRateLimit();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -68,6 +72,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseIpRateLimiting();
 app.UseCors("CorsPolicy");
 app.UseResponseCaching();
 app.UseHttpCacheHeaders();

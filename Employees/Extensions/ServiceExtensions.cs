@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using Employees.Data;
 using Employees.Interfaces;
 using Employees.Services;
@@ -44,5 +45,28 @@ namespace Employees.Extensions
                     validation.MustRevalidate = true;
                 }
             );
+
+        public static void ConfigureRateLimit(this IServiceCollection services)
+        {
+            var RateLimitRules = new List<RateLimitRule>
+            {
+                new RateLimitRule
+                {
+                    Endpoint = "*",
+                    Limit = 100,
+                    Period = "1m"
+                }
+            };
+
+            services.Configure<IpRateLimitOptions>(opt =>
+            {
+                opt.GeneralRules = RateLimitRules;
+            });
+
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+        }
     }
 }
