@@ -35,6 +35,8 @@ builder.Services.ConfigureCacheHeaders();
 builder.Services.AddMemoryCache();
 builder.Services.ConfigureRateLimit();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
 
 var app = builder.Build();
 
@@ -72,6 +74,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseIpRateLimiting();
 app.UseCors("CorsPolicy");
 app.UseResponseCaching();

@@ -4,5 +4,6 @@ namespace Employees.Interfaces
     {
         public ICompanyService Company { get; }
         public IEmployeeService Employee { get; }
+        public IAuthenticationService Authentication { get; }
     }
 }

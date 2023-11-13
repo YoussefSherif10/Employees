@@ -1,8 +1,9 @@
 using AspNetCoreRateLimit;
 using Employees.Data;
 using Employees.Interfaces;
+using Employees.Models;
 using Employees.Services;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Employees.Extensions
 {
@@ -67,6 +68,22 @@ namespace Employees.Extensions
             services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+        }
+
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+            services
+                .AddIdentity<User, IdentityRole>(o =>
+                {
+                    o.Password.RequireDigit = true;
+                    o.Password.RequireLowercase = false;
+                    o.Password.RequireUppercase = false;
+                    o.Password.RequireNonAlphanumeric = false;
+                    o.Password.RequiredLength = 10;
+                    o.User.RequireUniqueEmail = true;
+                })
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
         }
     }
 }
