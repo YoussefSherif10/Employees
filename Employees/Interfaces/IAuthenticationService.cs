@@ -6,5 +6,7 @@ namespace Employees.Interfaces
     public interface IAuthenticationService
     {
         public Task<IdentityResult> RegisterUser(UserForRegistrationDto userForRegistration);
+        public Task<bool> IsValidUser(UserForAuthenticationDto userForAuthentication);
+        public Task<string> CreateToken();
     }
 }

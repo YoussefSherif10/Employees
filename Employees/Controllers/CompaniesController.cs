@@ -3,6 +3,7 @@ using Employees.Controllers.ModelBinders;
 using Employees.Interfaces;
 using Employees.Models.DTO;
 using Employees.Models.Params;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Employees.Controllers
@@ -21,6 +22,7 @@ namespace Employees.Controllers
 
         [HttpGet(Name = "GetCompanies")]
         [HttpHead]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> GetCompanies([FromQuery] CompanyParams companyParams)
         {
             var (companyDtos, pagingInfoDto) = await _service

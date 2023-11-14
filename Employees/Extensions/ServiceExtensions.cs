@@ -1,9 +1,12 @@
+using System.Text;
 using AspNetCoreRateLimit;
 using Employees.Data;
 using Employees.Interfaces;
 using Employees.Models;
 using Employees.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Employees.Extensions
 {
@@ -84,6 +87,37 @@ namespace Employees.Extensions
                 })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+        }
+
+        public static void ConfigureJwt(
+            this IServiceCollection services,
+            IConfiguration Configuration
+        )
+        {
+            var jwtSettings = Configuration.GetSection("JwtSettings");
+            // var secretKey = Environment.GetEnvironmentVariable("SECRET");
+
+            services
+                .AddAuthentication(opt =>
+                {
+                    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings.GetSection("validIssuer").Value,
+                        ValidAudience = jwtSettings.GetSection("validAudience").Value,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes("Thatisaveryinsecurekeytthatijustlove")
+                        )
+                    };
+                });
         }
     }
 }
